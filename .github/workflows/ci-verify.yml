@@ -22,17 +22,20 @@ jobs:
       - name: Install build deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build g++ ccache
-      - name: Configure
-        working-directory: source
+          sudo apt-get install -y cmake ninja-build g++ unzip
+      - name: Build oneDNN snapshot (OSPP 2026)
+        working-directory: source/summer_ospp_2026
         run: |
-          cmake -S . -B build -G Ninja \
+          set -e
+          unzip -q oneDNN-*.zip
+          srcdir=$(ls -d oneDNN-* | head -1)
+          echo "building $srcdir"
+          cmake -S "$srcdir" -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
+            -DONEDNN_BUILD_TESTS=OFF \
             -DONEDNN_BUILD_EXAMPLES=OFF \
-            -DONEDNN_BUILD_TESTS=OFF
-      - name: Build
-        working-directory: source
-        run: cmake --build build -j 4
+            -DONEDNN_LIBRARY_TYPE=SHARED
+          cmake --build build -j 4
       - name: Show artifacts
-        working-directory: source
-        run: find build -name "libdnnl*.so*" | head -5
+        working-directory: source/summer_ospp_2026
+        run: find build -name "libdnnl*" -maxdepth 3 | head -5
