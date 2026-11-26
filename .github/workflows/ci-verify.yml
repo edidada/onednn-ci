@@ -17,8 +17,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
-      - name: Clone upstream source (Gitee)
-        run: git clone --depth=1 https://gitee.com/eulixos/onednn.git source
+      - name: Clone upstream source (edidada/onednn mirror)
+        run: |
+          git clone --depth=1 https://github.com/edidada/onednn.git source
+          git -C source log -1 --format='source HEAD %H %s'
       - name: Install build deps
         run: |
           sudo apt-get update
